@@ -4,6 +4,7 @@ builder.CreateUmbracoBuilder()
     .AddBackOffice()
     .AddWebsite()
     .AddDeliveryApi()
++   .AddCdnMediaUrlProvider()
     .AddComposers()
     .Build();
 
