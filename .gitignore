@@ -478,4 +478,4 @@ appsettings-schema.*.json
 # Media files
 /wwwroot/media/
 /appsettings.Development.json
-/Smidge/Cache/DAVESPC/5576821d11272cdfc02c6d27f5b5135b9d9b1ae9
+/Smidge/*
