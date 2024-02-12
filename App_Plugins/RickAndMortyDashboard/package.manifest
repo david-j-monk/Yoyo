@@ -1,0 +1,14 @@
+{
+    "dashboards":  [
+        {
+            "alias": "Rick and Morty Importer",
+            "view":  "/App_Plugins/RickAndMortyDashboard/RickAndMortyDashboard.html",
+            "sections":  [ "content" ],
+            "weight": -10,
+            "access": [
+                { "deny": "translator" },
+                { "grant": "admin" }
+            ]
+        }
+    ]
+}
