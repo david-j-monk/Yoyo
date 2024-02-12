@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="App_Plugins\RickAndMortyDashboard\package.manifest" />
+    <None Include="App_Plugins\**" />
   </ItemGroup>
 
   <PropertyGroup>
