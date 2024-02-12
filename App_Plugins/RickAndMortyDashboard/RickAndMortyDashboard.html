@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Rick and Morty Importer</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+    <h2>Rick and Morty Importer</h2>
+
+    <button id="importButton">Import Rick and Morty Characters</button>
+
+
+    <select id="characterDropdown"></select>
+
+    <button id="createButton">Create Component</button>
+
+    <div id="characterDetails"></div>
+
+    <script>
+        document.getElementById('createButton').addEventListener('click', function () {
+            var dropdown = document.getElementById('characterDropdown');
+            var selectedCharacterId = dropdown.value;
+
+            if (selectedCharacterId) {
+                // Implement logic to trigger the create character action
+                fetch('/umbraco/api/RickAndMortyDashboard/CreateCharacter/' + selectedCharacterId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to create character.');
+                        }
+                    })
+                    .then(data => {
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error creating character.');
+                    });
+            } else {
+                alert('Please select a character before creating.');
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('importButton').addEventListener('click', function () {
+            // Implement logic to trigger the import action
+            fetch('/umbraco/api/RickAndMortyDashboard/ImportRickAndMortyCharacters', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data from the API.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("Data imported successfully!");
+
+                    var dropdown = document.getElementById('characterDropdown');
+                    var detailsDiv = document.getElementById('characterDetails');
+
+                    // Clear existing options
+                    dropdown.innerHTML = '';
+
+                    // Add a default option
+                    var defaultOption = document.createElement('option');
+                    defaultOption.text = 'Select a character';
+                    dropdown.add(defaultOption);
+
+                    // Add character names to the dropdown
+                    for (var i = 0; i < data.length; i++) {
+                        var character = data[i];
+
+                        var option = document.createElement('option');
+                        option.value = character.id;  // Assuming character name property is 'name'
+                        option.text = character.name;
+                        dropdown.add(option);
+                    }
+
+                    // Listen for changes in the dropdown
+                    dropdown.addEventListener('change', function () {
+                        var selectedCharacterId = dropdown.value;
+
+                        // Find the selected character in the data array
+                        var selectedCharacterData = data.find(function (character) {
+                            return character.id.toString() === selectedCharacterId;
+                        });
+
+                        // Display details in the detailsDiv
+                        detailsDiv.innerHTML = '<h3>' + selectedCharacterData.name + '</h3>' +
+                            '<img src="' + selectedCharacterData.image + '" alt="Image of ' + selectedCharacterData.name + '">' +
+                            '<ul>' +
+                            '<li>Status: ' + selectedCharacterData.status + '</li>' +
+                            '<li>Species: ' + selectedCharacterData.species + '</li>' +
+                            (selectedCharacterData.type ? '<li>Type: ' + selectedCharacterData.type + '</li>' : '') +
+                            '<li>Gender: ' + selectedCharacterData.gender + '</li>' +
+                            '<li>origin: ' + selectedCharacterData.origin.name + '</li>' +
+                            '<li>location: ' + selectedCharacterData.location.name + '</li>' +
+                            '</ul>';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error importing data.');
+                });
+        });
+    </script>
+
+</body>
+</html>
