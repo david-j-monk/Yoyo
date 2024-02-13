@@ -1,61 +1,69 @@
 ﻿namespace Yoyo.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
-using System.Text.Json;
-using Yoyo.Models;
-using Umbraco.Extensions;
+using Models;
+using Umbraco.Cms.Core.Web;
 
 [Route("umbraco/api/[controller]")]
 [ApiController]
-public class RickAndMortyDashboardController : ControllerBase
+public class RickAndMortyDashboardController(IContentService contentService) : ControllerBase
 {
-    private readonly IContentService _contentService;
-    private static List<Character> Characters { get; set; } = [];
-    public RickAndMortyDashboardController(IContentService contentService)
-    {
-        _contentService = contentService;
-    }
+    private static List<Character> characters { get; set; } = [];
+    private static DateTime lastRetrievalDateTime { get; set; }
 
-    [HttpPost("ImportRickAndMortyCharacters")]
+    [HttpGet("ImportRickAndMortyCharacters")]
     public async Task<ActionResult<List<Character>>?> ImportRickAndMortyCharactersAsync()
     {
-        if (Characters.Count > 0) return Characters;
+        if (characters.Count > 0 && lastRetrievalDateTime > DateTime.Now.AddHours(-.5))
+        { return characters; }
+
         try
         {
             await MakeApiCall();
+            lastRetrievalDateTime = DateTime.Now;
         }
         catch (Exception)
         {
-            Characters = new List<Character>();
+            characters = [];
             return BadRequest("Failed to import Rick and Morty characters.");
         }
-        return Characters;
+        return characters;
     }
 
-    // POST action to handle form submission
-    [HttpPost("CreateCharacter/{id}")]
-    public IActionResult CreateCharacter(int id)
+    [HttpPost("CreateCharacterContent/{id:int}")]
+    public IActionResult CreateCharacterContent(int id)
     {
-            var character = Characters[--id];
-            // Create Umbraco content node
-            IContent characterContent = _contentService.Create(character.name, -1, "CharacterPage");
-            characterContent.SetValue("characterName", character.name);
-            characterContent.SetValue("status", character.status);
-            characterContent.SetValue("species", character.species);
-            characterContent.SetValue("gender", character.gender);
+        if (id <= 0 || id > characters.Count) return BadRequest("Character ID not recognized");
 
-            // Save and publish the content
-            _contentService.SaveAndPublish(characterContent);
+        var character = characters[--id];
 
-            return Content("Character created successfully.");
+        var homepage = contentService.GetRootContent().FirstOrDefault();
+        var children = contentService.GetPagedChildren(homepage!.Id, 0, int.MaxValue, out _);
 
+        var existingContent = children.FirstOrDefault(x => x.Name == $"{character.id}-{character.name}");
+        
+        var characterContent = existingContent is null 
+            ? contentService.Create($"{character.id}-{character.name}", homepage?.Id ?? -1, "CharacterPage")
+            : contentService.GetById(existingContent.Id);
 
-        // If ModelState is not valid, handle accordingly
-        return BadRequest("Invalid model state");
+        characterContent.SetValue("characterName", character.name);
+        characterContent.SetValue("status", character.status);
+        characterContent.SetValue("species", character.species);
+        characterContent.SetValue("gender", character.gender);
+        characterContent.SetValue("image", character.image);
+        characterContent.SetValue("type", character.type);
+        characterContent.SetValue("origin", character.origin?.name);
+        characterContent.SetValue("location", character.location?.name);
+        
+        // Save and publish the content
+        contentService.SaveAndPublish(characterContent);
+
+        return Content("Character created successfully.");
     }
 
-    private async Task MakeApiCall(string url = "https://rickandmortyapi.com/api/character")
+    private static async Task MakeApiCall(string url = "https://rickandmortyapi.com/api/character")
     {
         var client = new HttpClient();
         while (true)
@@ -63,9 +71,11 @@ public class RickAndMortyDashboardController : ControllerBase
             var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
-            var characterResponse = JsonSerializer.Deserialize<CharacterResponse>(responseBody);
-            Characters.AddRange(characterResponse.results);
-            if (characterResponse.info.next != null)
+            var characterResponse = JsonSerializer.Deserialize<CharacterResponse>(responseBody)
+                                    ?? throw new Exception("Could not deserialize response");
+
+            if (characterResponse.results is not null) characters.AddRange(characterResponse.results);
+            if (characterResponse.info?.next is not null)
             {
                 url = characterResponse.info.next;
                 continue;
