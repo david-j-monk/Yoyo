@@ -2,7 +2,18 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.CharacterPage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 
-@Model.Value("characterName")
-@Model.Value("gender")
-@Model.Value("species")
-@Model.Value("status")
+<h1>@Model.Value("characterName")</h1>
+<img src='@Model.Value("image")' alt="Image of @Model.Value("characterName")" />
+<ul>
+    <li>Gender: @Model.Value("gender")</li>
+    <li>Species: @Model.Value("species")</li>
+    @if (!string.IsNullOrWhiteSpace(Model.Value("type").ToString()))
+    {
+        <li>Type: @Model.Value("type")</li>;
+    }
+    <li>Status: @Model.Value("status")</li>
+    <li>Origin: @Model.Value("origin")</li>
+    <li>Location: @Model.Value("location")</li>
+</ul>
+
+<a href="/">Home</a>

@@ -2,29 +2,32 @@
 <html>
 <head>
     <title>Rick and Morty Importer</title>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 <body>
 
     <h2>Rick and Morty Importer</h2>
 
-    <button id="importButton">Import Rick and Morty Characters</button>
+    <button id="importButton" style="display: block;">Import Rick and Morty Characters</button>
 
 
-    <select id="characterDropdown"></select>
-
-    <button id="createButton">Create Component</button>
-
+    <select id="characterDropdown" style="display: none;"></select>
+    <button id="createButton" style="display: none;">Create Component</button>
+    <br />
+    <div id="loading" style="display: none;">LOADING...</div>
     <div id="characterDetails"></div>
 
+
     <script>
-        document.getElementById('createButton').addEventListener('click', function () {
-            var dropdown = document.getElementById('characterDropdown');
-            var selectedCharacterId = dropdown.value;
+        var loadingElement = document.getElementById("loading");
+        var characterDropdown = document.getElementById('characterDropdown');
+        var importButton = document.getElementById("importButton");
+        var createButton = document.getElementById("createButton");
+
+        createButton.addEventListener('click', function () {
+            var selectedCharacterId = characterDropdown.value;
 
             if (selectedCharacterId) {
-                // Implement logic to trigger the create character action
-                fetch('/umbraco/api/RickAndMortyDashboard/CreateCharacter/' + selectedCharacterId, {
+                fetch('/umbraco/api/RickAndMortyDashboard/CreateCharacterContent/' + selectedCharacterId, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -36,9 +39,7 @@
                             throw new Error('Failed to create character.');
                         }
                     })
-                    .then(data => {
-                        location.reload();
-                    })
+                    .then(_ => { location.reload(); })
                     .catch(error => {
                         console.error('Error:', error);
                         alert('Error creating character.');
@@ -46,13 +47,15 @@
             } else {
                 alert('Please select a character before creating.');
             }
+
         });
-    </script>
-    <script>
-        document.getElementById('importButton').addEventListener('click', function () {
-            // Implement logic to trigger the import action
+
+        importButton.addEventListener('click', function () {
+
+            loadingElement.style.display = "block";
+
             fetch('/umbraco/api/RickAndMortyDashboard/ImportRickAndMortyCharacters', {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -62,42 +65,39 @@
                     if (!response.ok) {
                         throw new Error('Failed to fetch data from the API.');
                     }
+                    createButton.style.display = "none";
+                    loadingElement.style.display = "none";
+                    importButton.style.display = "block";
+                    characterDropdown.style.display = "none";
                     return response.json();
                 })
                 .then(data => {
-                    alert("Data imported successfully!");
 
                     var dropdown = document.getElementById('characterDropdown');
                     var detailsDiv = document.getElementById('characterDetails');
 
-                    // Clear existing options
                     dropdown.innerHTML = '';
 
-                    // Add a default option
                     var defaultOption = document.createElement('option');
                     defaultOption.text = 'Select a character';
                     dropdown.add(defaultOption);
 
-                    // Add character names to the dropdown
                     for (var i = 0; i < data.length; i++) {
                         var character = data[i];
 
                         var option = document.createElement('option');
-                        option.value = character.id;  // Assuming character name property is 'name'
+                        option.value = character.id;
                         option.text = character.name;
                         dropdown.add(option);
                     }
 
-                    // Listen for changes in the dropdown
                     dropdown.addEventListener('change', function () {
                         var selectedCharacterId = dropdown.value;
 
-                        // Find the selected character in the data array
                         var selectedCharacterData = data.find(function (character) {
                             return character.id.toString() === selectedCharacterId;
                         });
 
-                        // Display details in the detailsDiv
                         detailsDiv.innerHTML = '<h3>' + selectedCharacterData.name + '</h3>' +
                             '<img src="' + selectedCharacterData.image + '" alt="Image of ' + selectedCharacterData.name + '">' +
                             '<ul>' +
@@ -108,13 +108,24 @@
                             '<li>origin: ' + selectedCharacterData.origin.name + '</li>' +
                             '<li>location: ' + selectedCharacterData.location.name + '</li>' +
                             '</ul>';
+
                     });
+
+                    createButton.style.display = "block";
+                    loadingElement.style.display = "none";
+                    importButton.style.display = "none";
+                    characterDropdown.style.display = "block";
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     alert('Error importing data.');
+
+                    createButton.style.display = "none";
+                    loadingElement.style.display = "none";
+                    importButton.style.display = "block";
+                    characterDropdown.style.display = "none";
                 });
-        });
+        })
     </script>
 
 </body>
