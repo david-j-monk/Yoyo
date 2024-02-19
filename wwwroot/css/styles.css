@@ -14,11 +14,11 @@ header {
     list-style-type: none !important;
     margin: 0;
     padding: 0;
-    background-color: #f8f9fa;
+    background: linear-gradient(to right, #f8f9fa, white);
     position: fixed;
     height: 100%;
     overflow: auto;
-    min-width : 25%;
+    min-width: 15%;
 }
 
 #characterList li a {
