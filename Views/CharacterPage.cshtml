@@ -2,18 +2,24 @@
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.CharacterPage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
 
-<h1>@Model.Value("characterName")</h1>
-<img src='@Model.Value("image")' alt="Image of @Model.Value("characterName")" />
-<ul>
-    <li>Gender: @Model.Value("gender")</li>
-    <li>Species: @Model.Value("species")</li>
-    @if (!string.IsNullOrWhiteSpace(Model.Value("type").ToString()))
-    {
-        <li>Type: @Model.Value("type")</li>;
-    }
-    <li>Status: @Model.Value("status")</li>
-    <li>Origin: @Model.Value("origin")</li>
-    <li>Location: @Model.Value("location")</li>
-</ul>
+<head>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
 
-<a href="/">Home</a>
+<div class="character-page">
+    <h1 class="character-name">@Model.Value("characterName")</h1>
+    <img class="character-image" src='@Model.Value("image")' alt="Image of @Model.Value("characterName")" />
+    <ul class="character-details">
+        <li>Gender: @Model.Value("gender")</li>
+        <li>Species: @Model.Value("species")</li>
+        @if (!string.IsNullOrWhiteSpace(Model.Value("type").ToString()))
+        {
+            <li>Type: @Model.Value("type")</li>
+            ;
+        }
+        <li>Status: @Model.Value("status")</li>
+        <li>Origin: @Model.Value("origin")</li>
+        <li>Location: @Model.Value("location")</li>
+    </ul>
+    <a class="home-link" href="/">Home</a>
+</div>
