@@ -5,10 +5,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-	<ItemGroup>
-    <PackageReference Include="Umbraco.Cms" Version="13.1.1" />
+  <ItemGroup>
+	<PackageReference Include="Umbraco.Cms" Version="13.1.1" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="App_Plugins\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
   <ItemGroup>
     <!-- Opt-in to app-local ICU to ensure consistent globalization APIs across different platforms -->
     <PackageReference Include="Microsoft.ICU.ICU4C.Runtime" Version="72.1.0.3" />
@@ -16,10 +20,6 @@
     <RuntimeHostConfigurationOption Include="System.Globalization.AppLocalIcu" Value="72.1.0.3" Condition="$(RuntimeIdentifier.StartsWith('linux')) or $(RuntimeIdentifier.StartsWith('win')) or ('$(RuntimeIdentifier)' == '' and !$([MSBuild]::IsOSPlatform('osx')))" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="App_Plugins\**" />
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </ItemGroup>
 
   <PropertyGroup>
     <!-- Razor files are needed for the backoffice to work correctly -->
