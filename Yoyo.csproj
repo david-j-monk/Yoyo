@@ -4,6 +4,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="App_Plugins\RickAndMortyDashboard\RickAndMortyDashboard.html" />
+    <Content Include="App_Plugins\RickAndMortyDashboard\RickAndMortyDashboardStyles.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App_Plugins\RickAndMortyDashboard\package.manifest" />
+    <None Include="App_Plugins\RickAndMortyDashboard\RickAndMortyDashboardScript.js" />
+  </ItemGroup>
 
   <ItemGroup>
 	<PackageReference Include="Umbraco.Cms" Version="13.1.1" />
