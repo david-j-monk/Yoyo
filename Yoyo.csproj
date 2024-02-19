@@ -21,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="App_Plugins\RickAndMortyDashboard\package.manifest" />
-    <None Include="app_plugins\rickandmortydashboard\RickAndMortyDashboardScript.js" />
+    <None Include="App_Plugins\**" />
   </ItemGroup>
 
   <PropertyGroup>
