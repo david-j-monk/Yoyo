@@ -48,6 +48,7 @@ h2 {
 
 #characterDropdown {
     width: 100px;
+    margin: auto;
 }
 
 #importButton {
@@ -58,13 +59,6 @@ h2 {
 #createButton {
     background-color: #28a745;
     color: white;
-}
-
-.loading {
-    text-align: center;
-    font-size: 1.2em;
-    color: #dc3545;
-    display: none;
 }
 
 #characterDetails {
@@ -89,9 +83,13 @@ h2 {
 
     #characterDetails ul {
         margin: 0;
+        list-style-type: none;
     }
 
 #spinner {
+    text-align: center;
+    font-size: 1.2em;
+    color: #dc3545;
     display: none;
     margin: 100px auto;
     width: 50px;
