@@ -21,7 +21,7 @@ public class RickAndMortyDashboardController(IContentService contentService) : C
 
         try
         {
-            await MakeApiCall();
+            await GetAllCharactersFromApi();
             lastRetrievalDateTime = DateTime.Now;
         }
         catch (Exception)
@@ -43,8 +43,8 @@ public class RickAndMortyDashboardController(IContentService contentService) : C
         var children = contentService.GetPagedChildren(homepage!.Id, 0, int.MaxValue, out _);
 
         var existingContent = children.FirstOrDefault(x => x.Name == $"{character.id}-{character.name}");
-        
-        var characterContent = existingContent is null 
+
+        var characterContent = existingContent is null
             ? contentService.Create($"{character.id}-{character.name}", homepage?.Id ?? -1, "CharacterPage")
             : contentService.GetById(existingContent.Id);
 
@@ -56,14 +56,14 @@ public class RickAndMortyDashboardController(IContentService contentService) : C
         characterContent.SetValue("type", character.type);
         characterContent.SetValue("origin", character.origin?.name);
         characterContent.SetValue("location", character.location?.name);
-        
+
         // Save and publish the content
         contentService.SaveAndPublish(characterContent);
 
         return Content("Character created successfully.");
     }
 
-    private static async Task MakeApiCall(string url = "https://rickandmortyapi.com/api/character")
+    private static async Task GetAllCharactersFromApi(string url = "https://rickandmortyapi.com/api/character")
     {
         var client = new HttpClient();
         while (true)
@@ -71,8 +71,15 @@ public class RickAndMortyDashboardController(IContentService contentService) : C
             var response = await client.GetAsync(url);
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
-            var characterResponse = JsonSerializer.Deserialize<CharacterResponse>(responseBody)
-                                    ?? throw new Exception("Could not deserialize response");
+            CharacterResponse characterResponse;
+            try
+            {
+                characterResponse = JsonSerializer.Deserialize<CharacterResponse>(responseBody);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Could not deserialize response");
+            }
 
             if (characterResponse.results is not null) characters.AddRange(characterResponse.results);
             if (characterResponse.info?.next is not null)

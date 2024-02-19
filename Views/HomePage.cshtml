@@ -1,19 +1,31 @@
 ﻿@using Umbraco.Cms.Web.Common.PublishedModels;
 @inherits Umbraco.Cms.Web.Common.Views.UmbracoViewPage<ContentModels.HomePage>
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels;
-Rick and Morty Character Collection
+<head>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+
+<header>
+    Rick and Morty Character Collection
+</header>
+
 @{
-	var selection = Umbraco.ContentAtRoot().FirstOrDefault()
-    .Children()
-    .Where(x => x.IsVisible())
-    .OrderBy(x => x.Id);
+    IOrderedEnumerable<IPublishedContent>? selection = null;
+    if (Umbraco.ContentAtRoot().FirstOrDefault() is not null)
+    {
+        selection = Umbraco.ContentAtRoot().FirstOrDefault()!
+        .Children()
+        .Where(x => x.IsVisible())
+        .OrderBy(x => x.Id);
+    }
+
 }
-<ul>
-	@foreach (var item in selection)
-	{
-		<li>
-			<a href="@item.Url()">@item.Name()</a>
-		</li>
-	}
+<ul id="characterList">
+    @foreach (var item in selection!)
+    {
+        <li>
+            <a href="@item.Url()">@item.Name()</a>
+        </li>
+    }
 </ul>
 
