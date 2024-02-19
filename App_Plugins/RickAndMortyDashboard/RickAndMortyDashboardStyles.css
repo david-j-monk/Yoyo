@@ -61,13 +61,6 @@ h2 {
     color: white;
 }
 
-.loading {
-    text-align: center;
-    font-size: 1.2em;
-    color: #dc3545;
-    display: none;
-}
-
 #characterDetails {
     display: none;
     width: max-content;
@@ -91,9 +84,12 @@ h2 {
     #characterDetails ul {
         margin: 0;
         list-style-type: none;
-    }    
+    }
 
 #spinner {
+    text-align: center;
+    font-size: 1.2em;
+    color: #dc3545;
     display: none;
     margin: 100px auto;
     width: 50px;

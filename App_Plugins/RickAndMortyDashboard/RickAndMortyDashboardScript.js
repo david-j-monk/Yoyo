@@ -1,10 +1,9 @@
-let loadingElement = document.getElementById("loading");
-let spinner = document.getElementById("spinner");
-let characterDropdown = document.getElementById('characterDropdown');
-let importButton = document.getElementById("importButton");
-let createButton = document.getElementById("createButton");
-let characterDetails = document.getElementById("characterDetails");
-let searchInput = document.getElementById("searchInput");
+var spinner = document.getElementById("spinner");
+var characterDropdown = document.getElementById('characterDropdown');
+var importButton = document.getElementById("importButton");
+var createButton = document.getElementById("createButton");
+var characterDetails = document.getElementById("characterDetails");
+var searchInput = document.getElementById("searchInput");
 var charactersData = [];
 
 createButton.addEventListener('click', function () {
@@ -57,7 +56,6 @@ function updateDropdownOptions(data) {
 
 importButton.addEventListener('click', function () {
 
-    loadingElement.style.display = "block";
     spinner.style.display = "block";
     importButton.style.display = "none";
 
@@ -73,7 +71,6 @@ importButton.addEventListener('click', function () {
                 throw new Error('Failed to fetch data from the API.');
             }
             createButton.style.display = "none";
-            loadingElement.style.display = "none";
             spinner.style.display = "none";
             importButton.style.display = "block";
             characterDropdown.style.display = "none";
@@ -120,7 +117,6 @@ importButton.addEventListener('click', function () {
             });
 
             createButton.style.display = "block";
-            loadingElement.style.display = "none";
             spinner.style.display = "none";
             importButton.style.display = "none";
             characterDropdown.style.display = "block";
@@ -131,7 +127,6 @@ importButton.addEventListener('click', function () {
             alert('Error importing data.');
 
             createButton.style.display = "none";
-            loadingElement.style.display = "none";
             spinner.style.display = "none";
             importButton.style.display = "block";
             characterDropdown.style.display = "none";
